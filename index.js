@@ -45,6 +45,12 @@ async function run() {
             const result = await reviewCollection.insertOne(review)
             console.log(result)
         })
+        app.post('/services', async (req, res) => {
+            const service = req.body
+            const result = await serviceCollection.insertOne(service)
+            console.log(result)
+        })
+
         app.get('/review', async (req, res) => {
             const query = {}
             const cursor = reviewCollection.find(query)
