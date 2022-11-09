@@ -73,7 +73,7 @@ async function run() {
             }
             const cursor = reviewCollection.find(query)
             const reviews = await cursor.toArray()
-            res.send(reviews)
+            res.send(reviews.reverse())
         })
         app.delete('/review/:id', async (req, res) => {
             const id = req.params.id
