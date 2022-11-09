@@ -43,16 +43,34 @@ async function run() {
         app.post('/review', async (req, res) => {
             const review = req.body
             const result = await reviewCollection.insertOne(review)
-            console.log(result)
+            res.send(result)
+        })
+        app.patch('/review/:id', async (req, res) => {
+            const id = req.params.id
+            const status = req.body.status
+            const query = { _id: ObjectId(id) }
+            const updatedDoc = {
+                $set: {
+                    status: status
+                }
+            }
+            const result = await reviewCollection.updateOne(query, updatedDoc)
+            res.send(result)
         })
         app.post('/services', async (req, res) => {
             const service = req.body
             const result = await serviceCollection.insertOne(service)
-            console.log(result)
+            res.send(result)
         })
 
         app.get('/review', async (req, res) => {
-            const query = {}
+
+            let query = {}
+            if (req.query.reviewId) {
+                query = {
+                    reviewId: req.query.reviewId
+                }
+            }
             const cursor = reviewCollection.find(query)
             const reviews = await cursor.toArray()
             res.send(reviews)
@@ -63,6 +81,7 @@ async function run() {
             const result = await reviewCollection.deleteOne(query)
             res.send(result)
         })
+
     }
     finally {
 
