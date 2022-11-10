@@ -55,6 +55,13 @@ async function run() {
             res.send(services.reverse())
 
         })
+        // app.get('/review', async (req, res) => {
+        //     const query = {}
+        //     const cursor = reviewCollection.find(query)
+        //     const services = await cursor.toArray()
+        //     res.send(services.reverse())
+
+        // })
         app.get('/services/:id', async (req, res) => {
             const id = req.params.id
             const query = { _id: ObjectId(id) }
@@ -67,18 +74,7 @@ async function run() {
             const result = await reviewCollection.insertOne(review)
             res.send(result)
         })
-        app.patch('/review/:id', async (req, res) => {
-            const id = req.params.id
-            const status = req.body.status
-            const query = { _id: ObjectId(id) }
-            const updatedDoc = {
-                $set: {
-                    status: status
-                }
-            }
-            const result = await reviewCollection.updateOne(query, updatedDoc)
-            res.send(result)
-        })
+
         app.get('/review/:id', async (req, res) => {
             const id = req.params.id
             const query = { _id: ObjectId(id) }
@@ -86,13 +82,45 @@ async function run() {
 
             res.send(service)
         })
+        app.put('/review/:id', async (req, res) => {
+            const id = req.params.id
+            const filter = { _id: ObjectId(id) }
+            const user = req.body
+            console.log(user)
+            const updatedUser = {
+                $set: {
+                    comment: user.comment
+                }
+            }
+            const result = await reviewCollection.updateOne(filter, updatedUser)
+            res.send(result)
+        })
+
         app.post('/services', async (req, res) => {
             const service = req.body
             const result = await serviceCollection.insertOne(service)
             res.send(result)
         })
 
-        app.get('/review', async (req, res) => {
+        app.get('/review', verifyJWT, async (req, res) => {
+            // const decoded = req.decoded
+            // console.log("1", req.query.reviewId)
+            // console.log("2", req.query.email)
+            // if (decoded.email !== req.query.email) {
+            //     res.status(403).send({ message: 'unauthorized access' })
+            // }
+            let query = {}
+
+            if (req.query.email) {
+                query = {
+                    email: req.query.email
+                }
+            }
+            const cursor = reviewCollection.find(query)
+            const reviews = await cursor.toArray()
+            res.send(reviews.reverse())
+        })
+        app.get('/review2', async (req, res) => {
             // const decoded = req.decoded
             // console.log("1", req.query.reviewId)
             // console.log("2", req.query.email)
@@ -105,11 +133,7 @@ async function run() {
                     reviewId: req.query.reviewId
                 }
             }
-            else {
-                query = {
-                    email: req.query.email
-                }
-            }
+
             const cursor = reviewCollection.find(query)
             const reviews = await cursor.toArray()
             res.send(reviews.reverse())
