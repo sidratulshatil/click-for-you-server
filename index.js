@@ -55,13 +55,7 @@ async function run() {
             res.send(services.reverse())
 
         })
-        // app.get('/review', async (req, res) => {
-        //     const query = {}
-        //     const cursor = reviewCollection.find(query)
-        //     const services = await cursor.toArray()
-        //     res.send(services.reverse())
 
-        // })
         app.get('/services/:id', async (req, res) => {
             const id = req.params.id
             const query = { _id: ObjectId(id) }
